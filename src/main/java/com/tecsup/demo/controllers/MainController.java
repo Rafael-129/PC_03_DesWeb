@@ -20,4 +20,9 @@ public class MainController {
     public String docente() {
         return "docente";
     }
+
+//    @GetMapping("/alumnos")
+//    public String alumnos() {
+//        return "alumno-listar";
+//    }
 }
