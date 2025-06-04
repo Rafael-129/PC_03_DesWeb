@@ -57,8 +57,12 @@ public class LogginAspecto {
         Integer id = null;
         if(metodo.startsWith("guardar")){
             Object[] parametros = joinPoint.getArgs();
-            Curso curso = (Curso)parametros[0];
-            id = curso.getId();
+            Object entidad = parametros[0];
+            if (entidad instanceof Curso curso) {
+                id = curso.getId();
+            } else if (entidad instanceof com.tecsup.demo.domain.entities.Alumno alumno) {
+                id = alumno.getId();
+            }
         }
         else if(metodo.startsWith("editar")){
             Object[] parametros = joinPoint.getArgs();
@@ -69,9 +73,17 @@ public class LogginAspecto {
             id = (Integer)parametros[0];
         }
 
+        String tabla = "cursos";
+        if (metodo.startsWith("guardar") && joinPoint.getArgs().length > 0) {
+            Object entidad = joinPoint.getArgs()[0];
+            if (entidad instanceof com.tecsup.demo.domain.entities.Alumno) {
+                tabla = "alumnos";
+            }
+        }
+
         String traza = "tx[" + tx + "] - " + metodo;
         logger.info(traza + " (): registrando auditoria...");
-        auditoriaDao.save(new Auditoria("cursos", id, Calendar.getInstance().getTime(),
+        auditoriaDao.save(new Auditoria(tabla, id, Calendar.getInstance().getTime(),
                 "usuario", metodo));
     }
 }
